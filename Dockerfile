@@ -1,4 +1,6 @@
-FROM rocker/geospatial:3.4.3
+FROM rocker/geospatial:latest
+
+RUN export ADD=shiny && bash /etc/cont-init.d/add
 
 MAINTAINER Landung Setiawan <landungs@uw.edu>
 
@@ -64,10 +66,13 @@ RUN cd /tmp && \
     conda clean -tipsy
 
 # Install Jupyter Notebook and Hub
-RUN conda install --quiet --yes \
-    'notebook=5.0.*' \
-    'jupyterhub=0.7.*' \
-    'jupyterlab=0.24.*' \
+RUN conda install -c conda-forge --quiet --yes \
+    'notebook=5.2.*' \
+    'jupyterhub=0.8.*' \
+    'jupyterlab' \
+    'nb_conda_kernels' \
+    'ipykernel' \
+    'ipywidgets' \
     && conda clean -tipsy
 
 ENV HOME /home/$NB_USER
@@ -89,9 +94,8 @@ RUN apt-get update && \
 
 
 RUN pip install --no-cache-dir \
-         notebook==5.2 \
-         git+https://github.com/jupyterhub/nbrsessionproxy.git@6eefeac11cbe82432d026f41a3341525a22d6a0b \
-         git+https://github.com/jupyterhub/nbserverproxy.git@5508a182b2144d29824652d8977b32302517c8bc && \
+         git+https://github.com/jupyterhub/nbrsessionproxy.git@b8a6518f92cd08f18031d7733d4db0dc07ee7c8d \
+         nbserverproxy==0.3.2 && \
     jupyter serverextension enable --sys-prefix --py nbserverproxy && \
     jupyter serverextension enable --sys-prefix --py nbrsessionproxy && \
     jupyter nbextension install    --sys-prefix --py nbrsessionproxy && \
@@ -108,15 +112,16 @@ EXPOSE 8888
 WORKDIR $HOME
 
 # Configure container startup
-ENTRYPOINT ["/bin/bash"]
-CMD ["/usr/local/bin/start-notebook.sh"]
+ENTRYPOINT ["tini", "--"]
+CMD ["start-notebook.sh"]
 
 # Add local files as late as possible to avoid cache busting
 COPY start.sh /usr/local/bin/
 COPY start-notebook.sh /usr/local/bin/
 COPY start-singleuser.sh /usr/local/bin/
 COPY jupyter_notebook_config.py /etc/jupyter/
-RUN chown -R $NB_USER:users /etc/jupyter/
+RUN chown -R $NB_USER:$NB_UID /etc/jupyter/
+RUN chmod -R +x /usr/local/bin/
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER $NB_USER
