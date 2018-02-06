@@ -4,7 +4,7 @@
 
 This Repo contains the Dockerfile for [lsetiawan/jnrstud-minimal](https://hub.docker.com/r/lsetiawan/jnrstud-minimal/).
 
-This image builds from [rocker/geospatial:3.4.3](https://hub.docker.com/r/rocker/geospatial/). The build commands are a compilation between [jupyter base-notebook](https://github.com/jupyter/docker-stacks/blob/8e15d329f1e9aafb54a90c5cc00853d42a9db68f/base-notebook/Dockerfile) and [rocker binder](https://github.com/rocker-org/binder/blob/master/3.4.3/Dockerfile)
+This image builds from [rocker/geospatial:latest](https://hub.docker.com/r/rocker/geospatial/). The build commands are a compilation between [jupyter base-notebook](https://github.com/jupyter/docker-stacks/blob/8e15d329f1e9aafb54a90c5cc00853d42a9db68f/base-notebook/Dockerfile) and [rocker binder](https://github.com/rocker-org/binder/blob/master/3.4.3/Dockerfile)
 
 To run the Docker image, just simply place the command below in your terminal:
 ```bash
